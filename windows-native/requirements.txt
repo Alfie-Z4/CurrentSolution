@@ -1,0 +1,11 @@
+# Python dependencies for Windows Native Installation
+# Install with: pip install -r requirements.txt
+
+# InfluxDB client
+influxdb-client==1.38.0
+
+# MQTT client
+paho-mqtt==1.6.1
+
+# Optional but useful
+python-dateutil==2.8.2
