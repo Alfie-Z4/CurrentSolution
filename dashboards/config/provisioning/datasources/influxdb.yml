@@ -4,14 +4,16 @@ datasources:
   - name: InfluxDB
     type: influxdb
     version: 1
-    editable: true
+    editable: false
     access: proxy
     url: http://timeseries-db.docker.local:8086
-    uid: influxdb
+    uid: powermon-influxdb
+    isDefault: true
     secureJsonData:
       token: $INFLUXDB_TOKEN
     jsonData:
       version: Flux
       organization: $INFLUXDB_ORG
       defaultBucket: $INFLUXDB_BUCKET
+      tlsSkipVerify: true
         

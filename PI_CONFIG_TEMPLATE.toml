@@ -1,0 +1,41 @@
+# Power Monitoring - Configuration Template for Raspberry Pi
+# Copy relevant sections to your current_sensing/config/user_config.toml
+
+# =================================================================
+# MQTT Configuration
+# IMPORTANT: Update the broker IP to your central server's IP
+# =================================================================
+[mqtt]
+    broker = "192.168.1.100"  # ← CHANGE TO YOUR CENTRAL SERVER IP
+    port = 1883
+    topic_prefix = ""
+
+    # Reconnection settings
+    [mqtt.reconnect]
+        initial = 5
+        backoff = 2
+        limit = 60
+
+# =================================================================
+# Machine Name
+# IMPORTANT: This must be UNIQUE for each Raspberry Pi
+# =================================================================
+[calculation.machine_name]
+    module = "gen_constants"
+    class = "ConstantSet"
+    
+[calculation.machine_name.config]
+    machine = "Pi_1"  # ← CHANGE FOR EACH PI: Pi_1, Pi_2, Pi_3, Pi_4, Pi_5
+
+# For Pi #2, use: machine = "Pi_2"
+# For Pi #3, use: machine = "Pi_3"
+# For Pi #4, use: machine = "Pi_4"
+# For Pi #5, use: machine = "Pi_5"
+
+# =================================================================
+# Notes for Configuration
+# =================================================================
+# 1. The MQTT broker IP MUST point to your central Windows server
+# 2. Each Pi MUST have a unique machine name
+# 3. Keep the rest of your hardware-specific configuration unchanged
+# 4. The machine name will appear in Grafana dashboards automatically

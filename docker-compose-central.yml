@@ -1,0 +1,121 @@
+version: "2"
+
+# Central Server Configuration
+# This runs: MQTT Broker, InfluxDB, Telegraf, Grafana, Analysis Module, Graph UI
+# Does NOT run: current-sensing (runs on individual Raspberry Pis)
+
+services:
+    # MQTT Broker - Receives data from all remote Raspberry Pis
+    mqtt_broker:
+        extends:
+            file: mqtt_broker/app.yml
+            service: app
+        ports:
+            - "1883:1883"  # Expose MQTT to network for Pi connections
+            - "9001:9001"  # WebSocket (optional)
+        restart: unless-stopped
+        logging:
+            driver: syslog
+            options:
+                tag: docker-mqtt-broker
+        networks:
+            internal:
+                aliases:
+                    - mqtt.docker.local
+
+    # InfluxDB - Time-series database storing all sensor data
+    timeseries-db:
+        extends:
+            file: timeseries_datastorage/app.yml
+            service: db
+        ports:
+            - "8086:8086"  # Optional: expose for direct access
+        networks:
+            internal:
+                aliases:
+                    - timeseries-db.docker.local
+        logging:
+            driver: syslog
+            options:
+                tag: docker-timeseries-db
+        restart: unless-stopped
+        depends_on:
+            - "mqtt_broker"
+
+    # Telegraf - Reads from MQTT and writes to InfluxDB
+    timeseries-db-input:
+        extends:
+            file: timeseries_datastorage/app.yml
+            service: telegraf
+        networks:
+            internal:
+                aliases:
+                    - timeseries-input.docker.local
+        logging:
+            driver: syslog
+            options:
+                tag: docker-timeseries-input
+        restart: unless-stopped
+        depends_on:
+            - "timeseries-db"
+            - "mqtt_broker"
+
+    # Grafana - Visualization dashboards
+    dashboard:
+        extends:
+            file: dashboards/app.yml
+            service: app
+        ports:
+            - "3000:3000"  # Access Grafana at http://<server-ip>:3000
+        networks:
+            internal:
+                aliases:
+                    - dashboards.docker.local
+        logging:
+            driver: syslog
+            options:
+                tag: docker-dashboards
+        restart: unless-stopped
+        depends_on:
+            - "mqtt_broker"
+            - "analysis"
+            - "timeseries-db"
+
+    # Analysis Module - Calculates power from current measurements
+    analysis:
+        extends:
+            file: analysis/app.yml
+            service: app
+        networks:
+            internal:
+                aliases:
+                    - analysis.docker.local
+        logging:
+            driver: syslog
+            options:
+                tag: docker-analysis
+        restart: unless-stopped
+        depends_on:
+            - "timeseries-db"
+
+    # Graph UI - Web interface (optional)
+    graph:
+        extends: 
+            file: graph/app.yml
+            service: app
+        ports:
+            - "80:80"  # Access web UI at http://<server-ip>
+        networks:
+            internal:
+                aliases:
+                    - graph.docker.local
+        logging:
+            driver: syslog
+            options:
+                tag: docker-graph
+        restart: unless-stopped
+
+networks:
+    internal:
+        name: shoestring-internal
+        driver: bridge

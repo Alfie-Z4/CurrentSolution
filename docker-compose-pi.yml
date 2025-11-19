@@ -1,0 +1,20 @@
+version: "2"
+
+# Raspberry Pi Configuration
+# This runs ONLY the current-sensing service
+# Connects to remote MQTT broker on central server
+
+services:
+    current-sensing:
+        extends:
+            file: current_sensing/app.yml
+            service: app
+        restart: unless-stopped
+        logging:
+            driver: json-file
+            options:
+                max-size: "10m"
+                max-file: "3"
+
+# No networks needed - connects directly to external MQTT broker
+# Configure MQTT broker IP in: current_sensing/config/user_config.toml

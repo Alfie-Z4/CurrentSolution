@@ -4,9 +4,11 @@ datasources:
   - name: Analysis Module
     type: marcusolsson-json-datasource
     version: 1
-    editable: true
+    editable: false
     access: proxy
     url: http://analysis.docker.local:80
-    uid: json_api
+    uid: powermon-analysis
+    jsonData:
+      tlsSkipVerify: true
 
         

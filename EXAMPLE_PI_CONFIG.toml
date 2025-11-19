@@ -1,0 +1,30 @@
+# Example Configuration for Raspberry Pi #1
+# Copy this to: current_sensing/config/user_config.toml
+
+# =================================================================
+# MQTT Configuration - MUST UPDATE
+# =================================================================
+[mqtt]
+    # IMPORTANT: Change this to your central server's IP address
+    broker = "192.168.1.100"  # <-- REPLACE WITH YOUR SERVER IP
+    port = 1883
+    topic_prefix = ""
+
+    # Reconnection settings
+    reconnect.initial = 5
+    reconnect.backoff = 2
+    reconnect.limit = 60
+
+# =================================================================
+# Machine Name - MUST BE UNIQUE FOR EACH PI
+# =================================================================
+[calculation.machine_name]
+    module = "gen_constants"
+    class = "ConstantSet"
+[calculation.machine_name.config]
+    machine = "Pi_1"  # <-- CHANGE FOR EACH PI: Pi_1, Pi_2, Pi_3, Pi_4, Pi_5
+
+# For Pi #2, use: machine = "Pi_2"
+# For Pi #3, use: machine = "Pi_3"
+# For Pi #4, use: machine = "Pi_4"
+# For Pi #5, use: machine = "Pi_5"

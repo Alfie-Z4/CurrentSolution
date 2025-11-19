@@ -1,0 +1,560 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": true,
+  "panels": [
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "powermon-influxdb"
+      },
+      "description": "Real-time current measurement from sensor",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "tooltip": false,
+              "viz": false,
+              "legend": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "amp"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": ["mean", "lastNotNull", "max"],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "powermon-influxdb"
+          },
+          "query": "from(bucket: \"power_monitoring\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"equipment_power_usage\")\n  |> filter(fn: (r) => r[\"_field\"] == \"current\")\n  |> filter(fn: (r) => r[\"machine\"] == \"${machine}\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"current\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Current - ${machine}",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "marcusolsson-json-datasource",
+        "uid": "powermon-analysis"
+      },
+      "description": "Calculated real power (W = V × I × PF)",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "tooltip": false,
+              "viz": false,
+              "legend": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": ["mean", "lastNotNull", "max"],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "cacheDurationSeconds": 30,
+          "datasource": {
+            "type": "marcusolsson-json-datasource",
+            "uid": "powermon-analysis"
+          },
+          "fields": [
+            {
+              "jsonPath": "$.[*].power_real",
+              "type": "number"
+            },
+            {
+              "jsonPath": "$.[*].timestamp",
+              "language": "jsonpath",
+              "name": "",
+              "type": "time"
+            }
+          ],
+          "method": "GET",
+          "params": [
+            ["machine", "${machine}"],
+            ["from", "${__from:date:iso}"],
+            ["to", "${__to:date:iso}"],
+            ["bucket", "power_monitoring"],
+            ["window", "${__interval}"]
+          ],
+          "queryParams": "",
+          "refId": "A",
+          "urlPath": "/power/real"
+        }
+      ],
+      "title": "Real Power - ${machine}",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "powermon-influxdb"
+      },
+      "description": "Live current reading",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 30,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 10
+              },
+              {
+                "color": "orange",
+                "value": 20
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+            ]
+          },
+          "unit": "amp"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 0,
+        "y": 9
+      },
+      "id": 3,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "values": false,
+          "calcs": ["lastNotNull"],
+          "fields": ""
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "10.4.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "powermon-influxdb"
+          },
+          "query": "from(bucket: \"power_monitoring\")\n  |> range(start: -5m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"equipment_power_usage\")\n  |> filter(fn: (r) => r[\"_field\"] == \"current\")\n  |> filter(fn: (r) => r[\"machine\"] == \"${machine}\")\n  |> last()",
+          "refId": "A"
+        }
+      ],
+      "title": "Current (Live)",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "marcusolsson-json-datasource",
+        "uid": "powermon-analysis"
+      },
+      "description": "Live power calculation",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 6000,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 2000
+              },
+              {
+                "color": "orange",
+                "value": 4000
+              },
+              {
+                "color": "red",
+                "value": 5000
+              }
+            ]
+          },
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 6,
+        "y": 9
+      },
+      "id": 4,
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "values": false,
+          "calcs": ["lastNotNull"],
+          "fields": ""
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "10.4.0",
+      "targets": [
+        {
+          "cacheDurationSeconds": 30,
+          "datasource": {
+            "type": "marcusolsson-json-datasource",
+            "uid": "powermon-analysis"
+          },
+          "fields": [
+            {
+              "jsonPath": "$.[*].power_real",
+              "type": "number"
+            },
+            {
+              "jsonPath": "$.[*].timestamp",
+              "language": "jsonpath",
+              "name": "",
+              "type": "time"
+            }
+          ],
+          "method": "GET",
+          "params": [
+            ["machine", "${machine}"],
+            ["from", "${__from:date:iso}"],
+            ["to", "${__to:date:iso}"],
+            ["bucket", "power_monitoring"],
+            ["window", "5s"]
+          ],
+          "queryParams": "",
+          "refId": "A",
+          "urlPath": "/power/real"
+        }
+      ],
+      "title": "Real Power (Live)",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "powermon-influxdb"
+      },
+      "description": "Statistics for selected time range",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "amp"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 12,
+        "y": 9
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "values": false,
+          "calcs": ["mean"],
+          "fields": ""
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.4.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "powermon-influxdb"
+          },
+          "query": "from(bucket: \"power_monitoring\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"equipment_power_usage\")\n  |> filter(fn: (r) => r[\"_field\"] == \"current\")\n  |> filter(fn: (r) => r[\"machine\"] == \"${machine}\")\n  |> mean()",
+          "refId": "A"
+        }
+      ],
+      "title": "Average Current",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "marcusolsson-json-datasource",
+        "uid": "powermon-analysis"
+      },
+      "description": "Statistics for selected time range",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 6,
+        "x": 18,
+        "y": 9
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "values": false,
+          "calcs": ["mean"],
+          "fields": ""
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "10.4.0",
+      "targets": [
+        {
+          "cacheDurationSeconds": 30,
+          "datasource": {
+            "type": "marcusolsson-json-datasource",
+            "uid": "powermon-analysis"
+          },
+          "fields": [
+            {
+              "jsonPath": "$.[*].power_real",
+              "type": "number"
+            },
+            {
+              "jsonPath": "$.[*].timestamp",
+              "language": "jsonpath",
+              "name": "",
+              "type": "time"
+            }
+          ],
+          "method": "GET",
+          "params": [
+            ["machine", "${machine}"],
+            ["from", "${__from:date:iso}"],
+            ["to", "${__to:date:iso}"],
+            ["bucket", "power_monitoring"],
+            ["window", "${__interval}"]
+          ],
+          "queryParams": "",
+          "refId": "A",
+          "urlPath": "/power/real"
+        }
+      ],
+      "title": "Average Real Power",
+      "type": "stat"
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["power-monitoring", "production"],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "datasource": {
+          "type": "influxdb",
+          "uid": "powermon-influxdb"
+        },
+        "definition": "import \"influxdata/influxdb/schema\"\n\nschema.tagValues(\n  bucket: \"power_monitoring\",\n  tag: \"machine\",\n  predicate: (r) => r._measurement == \"equipment_power_usage\",\n  start: -7d\n)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Machine",
+        "multi": false,
+        "name": "machine",
+        "options": [],
+        "query": "import \"influxdata/influxdb/schema\"\n\nschema.tagValues(\n  bucket: \"power_monitoring\",\n  tag: \"machine\",\n  predicate: (r) => r._measurement == \"equipment_power_usage\",\n  start: -7d\n)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Power Monitoring - Production",
+  "uid": "powermon-prod",
+  "version": 1,
+  "weekStart": ""
+}
