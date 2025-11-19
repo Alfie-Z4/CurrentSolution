@@ -28,7 +28,7 @@ No code changes needed! Just use the provided `docker-compose-central.yml`
 
 ```bash
 # Navigate to project directory
-cd PowerUniversitySolution
+cd PowerMonitoring
 
 # Start all services with one command
 docker-compose -f docker-compose-central.yml up -d
@@ -108,7 +108,7 @@ Find the machine name section and make it unique:
 
 ```bash
 # Navigate to project directory
-cd PowerUniversitySolution
+cd PowerMonitoring
 
 # Start only current-sensing
 docker-compose -f docker-compose-pi.yml up -d

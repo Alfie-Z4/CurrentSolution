@@ -1,11 +1,10 @@
 # ----------------------------------------------------------------------
 #
-#    Dockerfile script -- This file is part of the Sensing Data Collection 
-#    Service Module distribution. It contains all the commands needed to 
-#    assemble an image of the solution on a Raspberry Pi 4b with raspbian 
-#    OS version 11 (bullseye) 32 bits. 
+#    Dockerfile script -- This file is part of the Power Monitoring
+#    Solution. It contains all the commands needed to assemble an image 
+#    of the current sensing service on a Raspberry Pi with Raspberry Pi OS.
 #
-#    Copyright (C) 2022  Shoestring and University of Cambridge
+#    Copyright (C) 2025  DataImage
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by

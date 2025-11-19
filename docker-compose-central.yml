@@ -117,5 +117,5 @@ services:
 
 networks:
     internal:
-        name: shoestring-internal
+        name: dataimage-internal
         driver: bridge

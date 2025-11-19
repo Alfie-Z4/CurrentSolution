@@ -98,22 +98,11 @@ Get-NetFirewallRule -DisplayName "Power Monitoring*" | Format-Table DisplayName,
 **Option A: Using Git (Recommended)**
 
 ```powershell
-# Install Git for Windows if not already installed
-# Download from: https://git-scm.com/download/win
-
-# Clone the repository
-cd C:\
-git clone https://github.com/DigitalShoestringSolutions/PowerMonitoring.git
-cd PowerMonitoring
+# Navigate to your project directory
+cd C:\PowerMonitoring
 ```
 
-**Option B: Manual Copy**
-
-1. Copy your `PowerUniversitySolution` folder to `C:\PowerMonitoring`
-2. Open PowerShell and navigate:
-   ```powershell
-   cd C:\PowerMonitoring
-   ```
+**Note:** If you cloned from a repository, ensure you're using your company's repository, not the original upstream source.
 
 ### Step 4: Run the Deployment Script
 

@@ -30,7 +30,7 @@ Each Pi runs only:
 
 1. **Navigate to project directory:**
    ```bash
-   cd PowerUniversitySolution
+   cd PowerMonitoring
    ```
 
 2. **Update MQTT broker configuration:**
@@ -82,7 +82,7 @@ Each Pi runs only:
 
 1. **Navigate to project directory:**
    ```bash
-   cd PowerUniversitySolution
+   cd PowerMonitoring
    ```
 
 2. **Configure MQTT connection:**

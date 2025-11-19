@@ -1,8 +1,13 @@
-# Power Monitoring Starter Solution
+# Power Monitoring Solution - DataImage
 
-## Download
-Clone this repo: `git clone https://github.com/DigitalShoestringSolutions/PowerMonitoring`
-<!--tag/branch deliberately not included in above until release published. Head of default branch will do for now. -->
+## Overview
+Real-time power monitoring for industrial equipment using current sensors, MQTT, InfluxDB, and Grafana.
+
+## Quick Start
+For production deployment on Windows Server with Raspberry Pi sensors, see:
+- [WINDOWS_SETUP_GUIDE.md](WINDOWS_SETUP_GUIDE.md) - Complete setup guide for centralized architecture
+- [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) - Deployment procedures
+
 ## Configure
 Edit the text files at `/current_sensing/config/user_config.toml` and `/analysis/config/user_config.toml`
 ## Build
