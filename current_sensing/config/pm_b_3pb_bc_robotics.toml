@@ -102,8 +102,8 @@
 
 
 [mqtt]
-    # URL of the mqtt broker
-    broker = "mqtt.docker.local"
+    # URL of the mqtt broker - Changed to DataImage Windows Server
+    broker = "192.168.56.1"
     # Port to use when connecting to the broker
     port = 1883   #common mqtt ports are 1883 and 8883
     # prefix to prepend to the topic of all published messages
