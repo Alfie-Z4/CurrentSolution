@@ -105,7 +105,14 @@ def on_message(client, userdata, msg):
             'power_reactive': 'power_reactive',
             'frequency': 'frequency',
             'power_factor': 'power_factor',
-            'energy': 'energy'
+            'energy': 'energy',
+            # Statistical features
+            'current_mean': 'current_mean',
+            'current_min': 'current_min',
+            'current_max': 'current_max',
+            'current_std': 'current_std',
+            'current_range': 'current_range',
+            'sample_count': 'sample_count'
         }
         
         fields_added = 0

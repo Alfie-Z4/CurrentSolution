@@ -100,20 +100,33 @@ class SingleSampleAvg:
         self.previous_target = next_target
         return base_delay + self.delay_adjustment
 
-    def __average_variables(self, list):
+    def __average_variables(self, samples_list):
         aggregated_dict = {}
         # aggregate
-        for entry in list:
+        for entry in samples_list:
             for k, v in entry.items():
                 if k not in aggregated_dict:
                     aggregated_dict[k] = []
                 aggregated_dict[k].append(v)
 
+        logger.info(f"[SingleSampleAvg] Aggregated keys: {aggregated_dict.keys()}")
+        
         out = {}
         for k, v in aggregated_dict.items():
             try:
                 mean = statistics.mean(v)
                 out[k] = mean
+                
+                # Add statistical features for numeric values
+                if k == 'current_rms':
+                    logger.info(f"[SingleSampleAvg] Found current_rms! Adding statistics")
+                    out['current_mean'] = mean
+                    out['current_min'] = min(v)
+                    out['current_max'] = max(v)
+                    out['current_std'] = statistics.stdev(v) if len(v) > 1 else 0.0
+                    out['current_range'] = max(v) - min(v)
+                    out['sample_count'] = len(v)
+                    
             except TypeError:  # not numeric
                 mode = statistics.mode(v)
                 out[k] = mode
@@ -213,20 +226,33 @@ class MultiSampleMergedAvg:
         self.previous_target = next_target
         return base_delay + self.delay_adjustment
 
-    def __average_variables(self, list):
+    def __average_variables(self, samples_list):
         aggregated_dict = {}
         # aggregate
-        for entry in list:
+        for entry in samples_list:
             for k, v in entry.items():
                 if k not in aggregated_dict:
                     aggregated_dict[k] = []
                 aggregated_dict[k].append(v)
 
+        logger.info(f"[MultiSampleMergedAvg] Aggregated keys: {aggregated_dict.keys()}")
+        
         out = {}
         for k, v in aggregated_dict.items():
             try:
                 mean = statistics.mean(v)
                 out[k] = mean
+                
+                # Add statistical features for numeric values
+                if k == 'current_rms':
+                    logger.info(f"[MultiSampleMergedAvg] Found current_rms! Adding statistics")
+                    out['current_mean'] = mean
+                    out['current_min'] = min(v)
+                    out['current_max'] = max(v)
+                    out['current_std'] = statistics.stdev(v) if len(v) > 1 else 0.0
+                    out['current_range'] = max(v) - min(v)
+                    out['sample_count'] = len(v)
+                    
             except TypeError:  # not numeric
                 mode = statistics.mode(v)
                 out[k] = mode
@@ -337,21 +363,34 @@ class MultiSampleIndividualAvg:
         self.previous_target = next_target
         return base_delay + self.delay_adjustment
 
-    def __average_variables(self, list):
+    def __average_variables(self, samples_list):
         aggregated_dict = {}
         # aggregate
-        for entry in list:
+        for entry in samples_list:
             for k, v in entry.items():
                 if k not in aggregated_dict:
                     aggregated_dict[k] = []
                 aggregated_dict[k].append(v)
 
+        logger.info(f"[MultiSampleIndividualAvg] Aggregated keys: {aggregated_dict.keys()}")
+        
         out = {}
         for k, v in aggregated_dict.items():
             try:
                 mean = statistics.mean(v)
                 logger.debug(f"key: {k} - mean: {v} => {mean}")
                 out[k] = mean
+                
+                # Add statistical features for numeric values
+                if k == 'current_rms':
+                    logger.info(f"[MultiSampleIndividualAvg] Found current_rms! Adding statistics: min={min(v)}, max={max(v)}, count={len(v)}")
+                    out['current_mean'] = mean
+                    out['current_min'] = min(v)
+                    out['current_max'] = max(v)
+                    out['current_std'] = statistics.stdev(v) if len(v) > 1 else 0.0
+                    out['current_range'] = max(v) - min(v)
+                    out['sample_count'] = len(v)
+                    
             except TypeError:  # not numeric
                 mode = statistics.mode(v)
                 out[k] = mode
