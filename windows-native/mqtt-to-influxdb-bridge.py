@@ -101,6 +101,7 @@ def on_message(client, userdata, msg):
             'voltage': 'voltage',
             'power': 'power_real',
             'power_real': 'power_real',
+            'power_w': 'power_real',  # Support Shelly's power_w field
             'power_apparent': 'power_apparent',
             'power_reactive': 'power_reactive',
             'frequency': 'frequency',
