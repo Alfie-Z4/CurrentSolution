@@ -198,6 +198,23 @@ class BuildingBlockFramework(multiprocessing.Process):
         tz = datetime.timezone(datetime.timedelta(seconds=__dt))
         return datetime.datetime.now(tz=tz).isoformat()
 
+    def _check_filter(self, dataset, filter_spec):
+        """Check if dataset matches the filter criteria.
+        
+        Filter spec is a dict like {'source': 'phases'}.
+        Returns True if ALL filter conditions match the dataset, False otherwise.
+        If no filter is specified, returns True (output applies to all data).
+        """
+        if filter_spec is None:
+            return True
+        
+        for key, expected_value in filter_spec.items():
+            actual_value = dataset.get(key)
+            if actual_value != expected_value:
+                logger.debug(f"Filter mismatch: {key}={actual_value}, expected={expected_value}")
+                return False
+        return True
+
     def generate_output(self, var_dict, output_config):
         dataset = {**var_dict}
 
@@ -206,6 +223,12 @@ class BuildingBlockFramework(multiprocessing.Process):
 
         outputs = []
         for _output_item, output_item_config in output_config.items():
+            # Check if this output should apply to this dataset based on filter
+            filter_spec = output_item_config.get('filter')
+            if not self._check_filter(dataset, filter_spec):
+                logger.debug(f"Skipping output {_output_item} due to filter mismatch")
+                continue
+            
             payload = core.output.generate_json_path_message(dataset, output_item_config['message_spec'])
             # payload = core.output.generate_basic_output(dataset,output_spec)
             outputs.append({'topic': output_item_config.get('topic', ""), 'payload': payload})

@@ -46,5 +46,4 @@ calculation.current_clamp.config.nominal_current = 30          # Amps for 1V out
 #   If using Basic hardware, set which ADC channels the clamp(s) are plugged into.
 #   If using Intermediate or Advanced hardware, leave all these commented out.
 device.adc_0.config.adc_channel = 0
-#device.adc_1.config.adc_channel = 2                            # If using multiple clamps
-#device.adc_2.config.adc_channel = 4                            # If using multiple clamps
+device.adc_1.config.adc_channel = 2                            # Second clamp for motor

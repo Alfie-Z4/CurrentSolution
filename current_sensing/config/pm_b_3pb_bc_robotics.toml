@@ -27,6 +27,15 @@
 [device.adc_0.variables]
     v_in = "v_amp_out"
 
+[device.adc_1]
+    module="adc_MCP300X"
+    class="MCP3008"
+    interface="spi0"
+[device.adc_1.config]
+    adc_channel=2
+[device.adc_1.variables]
+    v_in = "v_amp_out"
+
 #=-= Define Calculation Modules =-=
 [calculation.machine_name]
     module="gen_constants"
@@ -74,10 +83,16 @@
 [[measurement.sensing_stacks]]
     device = "adc_0"
     pipeline = "rms_current"
+    constants = {'source'='phases'}
+[[measurement.sensing_stacks]]
+    device = "adc_1"
+    pipeline = "rms_current"
+    constants = {'source'='motor'}
 
 
 [output.phase_a]
     topic = "power_monitoring/{{machine}}/{{phase}}"
+    filter = {'source'='phases'}
 [output.phase_a.message_spec]
     machine = "$.machine"
     timestamp = '$.timestamp'
@@ -92,6 +107,7 @@
 
 [output.phase_b]
     topic = "power_monitoring/{{machine}}/{{phase}}"
+    filter = {'source'='phases'}
 [output.phase_b.message_spec]
     machine = "$.machine"
     timestamp = '$.timestamp'
@@ -106,6 +122,7 @@
 
 [output.phase_c]
     topic = "power_monitoring/{{machine}}/{{phase}}"
+    filter = {'source'='phases'}
 [output.phase_c.message_spec]
     machine = "$.machine"
     timestamp = '$.timestamp'
@@ -117,6 +134,20 @@
     current_range = "$.current_range"
     sample_count = "$.sample_count"
     phase = "#C"
+
+[output.motor]
+    topic = "power_monitoring/{{machine}}/motor"
+    filter = {'source'='motor'}
+[output.motor.message_spec]
+    machine = "$.machine"
+    timestamp = '$.timestamp'
+    current = "$.current_rms"
+    current_mean = "$.current_mean"
+    current_min = "$.current_min"
+    current_max = "$.current_max"
+    current_std = "$.current_std"
+    current_range = "$.current_range"
+    sample_count = "$.sample_count"
 
 
 [mqtt]
